@@ -37,9 +37,9 @@ interface Game {
 
 const GAMES: Game[] = [
   {
-    title: "Slope",
-    description: "Roll a ball down a neon slope. Don't fall off.",
-    url: "/games/slope/index.html",
+    title: "Speed Slope",
+    description: "Roll a ball down a neon slope at full speed. Don't fall off.",
+    url: "/games/speed-slope/index.html",
   },
 ];
 
