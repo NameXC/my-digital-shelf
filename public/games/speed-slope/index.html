@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Speed Slope</title>
+  <style>
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: #231F20; overflow: hidden; }
+    #unity-container { width: 100%; height: 100%; position: relative; }
+    #unity-canvas { width: 100%; height: 100%; display: block; }
+    #loading-cover {
+      position: absolute; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 16px;
+      background: #231F20; color: #fff;
+      font-family: Helvetica, Arial, sans-serif;
+    }
+    #progress-bar { width: 240px; height: 18px; position: relative; }
+    #progress-bar-empty { width: 100%; height: 100%; background: rgba(255,255,255,0.15); }
+    #progress-bar-full { position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: #3d63cd; transition: width 0.2s; }
+  </style>
+  <script src="speed-slope-v26060301.loader.js"></script>
+</head>
+<body>
+  <div id="unity-container">
+    <canvas id="unity-canvas" tabindex="-1"></canvas>
+    <div id="loading-cover">
+      <div style="font-size: 20px; font-weight: 700;">Speed Slope</div>
+      <div id="progress-bar">
+        <div id="progress-bar-empty"></div>
+        <div id="progress-bar-full"></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    var canvas = document.querySelector("#unity-canvas");
+    var progressBarFull = document.querySelector("#progress-bar-full");
+    var loadingCover = document.querySelector("#loading-cover");
+    createUnityInstance(canvas, {
+      dataUrl: "/__l5e/assets-v1/cad77f14-bebc-45af-b820-27ae9b2d9806/speed-slope-data.unityweb",
+      frameworkUrl: "speed-slope-v26060301.framework.js.unityweb",
+      codeUrl: "speed-slope-v26060301.wasm.unityweb",
+      streamingAssetsUrl: "StreamingAssets",
+      companyName: "IDnet",
+      productName: "Speed Slope",
+      productVersion: "1.0",
+    }, function (progress) {
+      progressBarFull.style.width = 100 * progress + "%";
+    }).then(function (unityInstance) {
+      loadingCover.style.display = "none";
+    }).catch(function (message) {
+      alert(message);
+    });
+  </script>
+</body>
+</html>
