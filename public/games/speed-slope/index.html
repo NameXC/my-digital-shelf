@@ -28,14 +28,24 @@
       document.addEventListener("gmsoftbanevent", function (e) {
         e.stopImmediatePropagation();
       }, true);
-      // Keep the licence request from ever returning a lock response.
+      // Serve the licence + settings responses from our own copies.
+      function rewrite(url) {
+        if (typeof url !== "string") return null;
+        if (url.indexOf("keysigned") !== -1) return "gmsdk-signed.txt";
+        if (url.indexOf("sdkdom/gamesdk") !== -1) return "gmsdk-config.json";
+        return null;
+      }
       var open = XMLHttpRequest.prototype.open;
       XMLHttpRequest.prototype.open = function (method, url) {
-        if (typeof url === "string" && url.indexOf("keysigned") !== -1) {
-          Object.defineProperty(this, "responseText", { get: function () { return SIGNED; } });
-          arguments[1] = "data:text/plain,";
-        }
+        var r = rewrite(url);
+        if (r) arguments[1] = r;
         return open.apply(this, arguments);
+      };
+      var fetchOrig = window.fetch;
+      window.fetch = function (input, init) {
+        var url = typeof input === "string" ? input : input && input.url;
+        var r = rewrite(url);
+        return fetchOrig.call(window, r || input, init);
       };
     })();
   </script>
