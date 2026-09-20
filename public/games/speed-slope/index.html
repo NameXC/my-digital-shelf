@@ -18,6 +18,37 @@
     #progress-bar-empty { width: 100%; height: 100%; background: rgba(255,255,255,0.15); }
     #progress-bar-full { position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: #3d63cd; transition: width 0.2s; }
   </style>
+  <script>
+    // Pre-approve the game's licence check so it works when self-hosted.
+    (function () {
+      var SIGNED = "eyJzaWduZWQiOiJtK1V6dHBzbTFcL1dkU05STEFGS0x3YVl0dzg4b296QlA0QktaeHY5cnNadUluNWlMUWZxMUk3ZEcwbnlIN3hKamRBVTFcL0FEOXZRTVFtRHljWVM0bW9xdFRpRXdDeFh6Mk8rc25ZVjF4ck4wTDN2eHJ1Sm5SSDNnaTBSaUFFSGlvK1NqQzZBMEhQbDd5U09FdkwrMmNoOThHazdjQ0VlenkxMHBLQk5ZdmpEWTZXVUR0WTd2UnVuN3ZwXC9vZUpJcmN4Qk1mOXhRbE41RFVOQkQ3Qm83NFNiU2ZYR1hjd1ZSXC81TkJQQ2hzRnh0cFhOaHpIWURhUVRkYWtrQjdjVENSYVBGQ2VxREN3N1FDQkhoK0ZOZFNXdVEwbm5RMm1QRTJ4alVqOXV1Y0kxWGdQNGZpNmJMVTRRMFhiRkh1SzRsRENLVWF4ZlBmbmxFemZ0UXdOR0MrY09BPT0iLCJhcCI6InllcyIsImhuIjoiZ2FtZXMub2ZyZWUuaW8iLCJkb21haW4iOiJvZnJlZS5pbyIsInMiOiJ5ZXMiLCJzdHlwZSI6Mn0=";
+      try { localStorage.setItem("gmsdksigndomain", SIGNED); } catch (e) {}
+      try { window.GMSOFT_SIGNED = SIGNED; } catch (e) {}
+      // Ignore any "ban this game" event from the remote licence service.
+      document.addEventListener("gmsoftbanevent", function (e) {
+        e.stopImmediatePropagation();
+      }, true);
+      // Serve the licence + settings responses from our own copies.
+      function rewrite(url) {
+        if (typeof url !== "string") return null;
+        if (url.indexOf("keysigned") !== -1) return "gmsdk-signed.txt";
+        if (url.indexOf("sdkdom/gamesdk") !== -1) return "gmsdk-config.json";
+        return null;
+      }
+      var open = XMLHttpRequest.prototype.open;
+      XMLHttpRequest.prototype.open = function (method, url) {
+        var r = rewrite(url);
+        if (r) arguments[1] = r;
+        return open.apply(this, arguments);
+      };
+      var fetchOrig = window.fetch;
+      window.fetch = function (input, init) {
+        var url = typeof input === "string" ? input : input && input.url;
+        var r = rewrite(url);
+        return fetchOrig.call(window, r || input, init);
+      };
+    })();
+  </script>
   <script src="speed-slope-v26060301.loader.js"></script>
 </head>
 <body>
