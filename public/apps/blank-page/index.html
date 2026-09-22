@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Blank Page</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="page" aria-label="Blank Page editor">
+      <textarea
+        id="editor"
+        class="editor"
+        autocomplete="off"
+        autocapitalize="sentences"
+        spellcheck="true"
+        placeholder="Just start typing…"
+      ></textarea>
+    </main>
+
+    <dialog id="help" class="help" aria-label="Keyboard shortcuts">
+      <h2>Shortcuts</h2>
+      <ul>
+        <li><kbd>Ctrl</kbd> + <kbd>K</kbd>: switch note</li>
+        <li><kbd>Ctrl</kbd> + <kbd>S</kbd>: download as .txt</li>
+        <li><kbd>Ctrl</kbd> + <kbd>/</kbd>: toggle this help</li>
+      </ul>
+      <form method="dialog">
+        <button>Close</button>
+      </form>
+    </dialog>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

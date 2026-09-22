@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EssentialsPlus · Minecraft Plugin</title>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: #0b0e14;
+      color: #e8edf5;
+      padding: 0 1.5rem 3rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* header / hero */
+    .hero {
+      text-align: center;
+      padding: 3rem 0 1.5rem;
+      border-bottom: 1px solid #2a313c;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero h1 {
+      font-size: 3.2rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #f0b34b, #f7d97e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: inline-block;
+    }
+
+    .hero .badge {
+      display: inline-block;
+      background: #d9534f;
+      color: white;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 0.25rem 1rem;
+      border-radius: 30px;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+      -webkit-text-fill-color: white;
+      background: #d9534f;
+    }
+
+    .hero .sub {
+      margin-top: 0.75rem;
+      font-size: 1.15rem;
+      color: #9aa4b8;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem 1.5rem;
+    }
+
+    .hero .sub i {
+      margin-right: 6px;
+      color: #f7d97e;
+    }
+
+    .download-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      margin: 1.8rem 0 0.5rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: #212833;
+      padding: 0.7rem 1.6rem;
+      border-radius: 40px;
+      font-weight: 600;
+      color: #e8edf5;
+      text-decoration: none;
+      transition: 0.2s;
+      border: 1px solid #35404f;
+      font-size: 1rem;
+    }
+
+    .btn-primary {
+      background: #f7b731;
+      color: #0b0e14;
+      border-color: #f7b731;
+    }
+
+    .btn-primary i {
+      color: #0b0e14;
+    }
+
+    .btn-primary:hover {
+      background: #faca4b;
+      transform: scale(1.02);
+    }
+
+    .btn-outline {
+      border-color: #3e4a5c;
+    }
+
+    .btn-outline:hover {
+      background: #2c3542;
+      border-color: #f7b731;
+    }
+
+    .btn i {
+      font-size: 1.1rem;
+      color: #f7b731;
+    }
+
+    .btn-primary i {
+      color: #0b0e14;
+    }
+
+    /* card grid */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin: 2.5rem 0;
+    }
+
+    @media (max-width: 800px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+    }
+
+    .card {
+      background: #141b24;
+      border-radius: 28px;
+      padding: 1.8rem 2rem 2rem;
+      border: 1px solid #28303d;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.6);
+      transition: 0.2s;
+    }
+
+    .card:hover {
+      border-color: #f7b73155;
+    }
+
+    .card h2 {
+      font-size: 1.6rem;
+      font-weight: 600;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: #f0e9d8;
+    }
+
+    .card h2 i {
+      color: #f7b731;
+      font-size: 1.7rem;
+    }
+
+    /* feature list */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.3rem 1.2rem;
+      margin: 0.5rem 0 0.2rem;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      font-size: 0.95rem;
+      padding: 0.25rem 0;
+      border-bottom: 1px solid #1f2833;
+    }
+
+    .feature-item i {
+      color: #f7b731;
+      width: 18px;
+      font-size: 0.8rem;
+    }
+
+    .feature-item code {
+      background: #1f2833;
+      padding: 0.1rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      color: #d6e0f0;
+    }
+
+    .badge-version {
+      background: #2c3542;
+      border-radius: 30px;
+      padding: 0.15rem 0.9rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #bcc8e0;
+      margin-left: 8px;
+    }
+
+    .permission-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      margin: 1rem 0 0.5rem;
+    }
+
+    .permission-table th {
+      text-align: left;
+      padding: 0.5rem 0.2rem;
+      border-bottom: 1px solid #2a313c;
+      color: #bcc8e0;
+      font-weight: 500;
+    }
+
+    .permission-table td {
+      padding: 0.4rem 0.2rem;
+      border-bottom: 1px solid #1f2833;
+    }
+
+    .permission-table .default-true {
+      color: #7ccf7c;
+    }
+    .permission-table .default-op {
+      color: #f7b731;
+    }
+
+    .comment-section {
+      margin-top: 2.5rem;
+    }
+
+    .comment-box {
+      background: #10171f;
+      border-radius: 20px;
+      padding: 1.5rem;
+      border: 1px solid #28303d;
+      margin-top: 1rem;
+    }
+
+    .comment-item {
+      padding: 1rem 0;
+      border-bottom: 1px solid #1f2833;
+      display: flex;
+      gap: 1rem;
+    }
+
+    .comment-item:last-child {
+      border-bottom: none;
+    }
+
+    .comment-avatar {
+      background: #2c3542;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: #f7b731;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .comment-body {
+      flex: 1;
+    }
+
+    .comment-body .name {
+      font-weight: 600;
+      color: #e8edf5;
+    }
+
+    .comment-body .time {
+      font-size: 0.75rem;
+      color: #7a879e;
+      margin-left: 0.8rem;
+    }
+
+    .comment-body .text {
+      margin-top: 4px;
+      color: #c8d2e3;
+    }
+
+    .comment-form {
+      display: flex;
+      gap: 0.8rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .comment-form input {
+      flex: 1;
+      min-width: 160px;
+      padding: 0.7rem 1.2rem;
+      border-radius: 40px;
+      border: 1px solid #35404f;
+      background: #1a222d;
+      color: #e8edf5;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .comment-form input::placeholder {
+      color: #5f6f86;
+    }
+
+    .comment-form button {
+      background: #f7b731;
+      border: none;
+      padding: 0.7rem 1.8rem;
+      border-radius: 40px;
+      font-weight: 700;
+      color: #0b0e14;
+      cursor: pointer;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .comment-form button:hover {
+      background: #faca4b;
+    }
+
+    .issue-tracker {
+      margin-top: 1.2rem;
+    }
+
+    .issue-item {
+      background: #10171f;
+      border-radius: 14px;
+      padding: 0.9rem 1.2rem;
+      margin-bottom: 0.8rem;
+      border-left: 5px solid #f7b731;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .issue-item .title {
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .issue-item .title .status {
+      font-size: 0.7rem;
+      background: #2c3542;
+      padding: 0.15rem 0.8rem;
+      border-radius: 30px;
+      color: #bcc8e0;
+    }
+
+    .issue-item .title .status.open {
+      background: #d9534f;
+      color: white;
+    }
+
+    .issue-item .title .status.fixed {
+      background: #5cb85c;
+      color: white;
+    }
+
+    .issue-item .meta {
+      color: #7a879e;
+      font-size: 0.85rem;
+      display: flex;
+      gap: 1rem;
+    }
+
+    .issue-item .meta i {
+      margin-right: 4px;
+    }
+
+    .known-issues {
+      background: #1f1b1b;
+      border-radius: 16px;
+      padding: 1.2rem 1.5rem;
+      margin-top: 0.8rem;
+      border: 1px solid #3d2e2e;
+    }
+
+    .known-issues li {
+      list-style: none;
+      padding: 0.25rem 0;
+      display: flex;
+      gap: 10px;
+    }
+
+    .known-issues li i {
+      color: #d9534f;
+      margin-top: 4px;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.5rem 3rem;
+      border-top: 1px solid #212833;
+      padding-top: 2rem;
+      margin-top: 2.5rem;
+    }
+
+    .footer-links a {
+      color: #9aa4b8;
+      text-decoration: none;
+      transition: 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .footer-links a:hover {
+      color: #f7b731;
+    }
+
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 2.4rem; }
+      .feature-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div>
+      <h1>EssentialsPlus</h1>
+      <span class="badge">BETA</span>
+    </div>
+    <div class="sub">
+      <span><i class="fas fa-cube"></i> Paper 1.21+</span>
+      <span><i class="fas fa-server"></i> Purpur compatible</span>
+      <span><i class="fas fa-code-branch"></i> v1.0.0</span>
+    </div>
+    <div class="download-bar">
+      <a href="https://modrinth.com/plugin/essentials-plus" target="_blank" class="btn btn-primary">
+        <i class="fas fa-download"></i> Download (Modrinth)
+      </a>
+      <a href="https://modrinth.com/plugin/essentials-plus/versions" target="_blank" class="btn btn-outline">
+        <i class="fas fa-history"></i> All versions
+      </a>
+    </div>
+    <div style="margin-top: 0.5rem; font-size: 0.9rem; color: #d9534f;">
+      <i class="fas fa-exclamation-triangle"></i> STILL IN BETA, MIGHT BE UNSTABLE
+    </div>
+  </div>
+
+  <!-- GRID: Features + Permissions -->
+  <div class="grid-2">
+    <!-- left: features -->
+    <div class="card">
+      <h2><i class="fas fa-list-ul"></i> Commands</h2>
+      <div style="display: flex; flex-wrap: wrap; gap: 0.3rem 1.5rem; margin-bottom: 0.5rem;">
+        <span><i class="fas fa-tag" style="color:#f7b731;"></i> Teleportation</span>
+        <span><i class="fas fa-tools" style="color:#7ccf7c;"></i> Utility</span>
+        <span><i class="fas fa-clock" style="color:#6ab0f7;"></i> Status</span>
+      </div>
+      <div class="feature-grid">
+        <div class="feature-item"><i class="fas fa-location-dot"></i> <code>/spawn</code></div>
+        <div class="feature-item"><i class="fas fa-location-dot"></i> <code>/setspawn</code> <span class="badge-version">admin</span></div>
+        <div class="feature-item"><i class="fas fa-arrow-right"></i> <code>/tpa</code></div>
+        <div class="feature-item"><i class="fas fa-arrow-left"></i> <code>/tpahere</code></div>
+        <div class="feature-item"><i class="fas fa-check"></i> <code>/tpaccept</code></div>
+        <div class="feature-item"><i class="fas fa-xmark"></i> <code>/tpdeny</code></div>
+        <div class="feature-item"><i class="fas fa-toggle-on"></i> <code>/tpatoggle</code></div>
+        <div class="feature-item"><i class="fas fa-house"></i> <code>/home</code> <code>/sethome</code></div>
+        <div class="feature-item"><i class="fas fa-trash"></i> <code>/delhome</code> <code>/homes</code></div>
+        <div class="feature-item"><i class="fas fa-map-pin"></i> <code>/warp</code> <code>/setwarp</code> <span class="badge-version">admin</span></div>
+        <div class="feature-item"><i class="fas fa-random"></i> <code>/rtp</code></div>
+        <div class="feature-item"><i class="fas fa-gem"></i> <code>/workbench</code> <code>/anvil</code></div>
+        <div class="feature-item"><i class="fas fa-chess-queen"></i> <code>/enderchest</code></div>
+        <div class="feature-item"><i class="fas fa-cut"></i> <code>/stonecutter</code> <code>/grindstone</code></div>
+        <div class="feature-item"><i class="fas fa-trash-can"></i> <code>/wastebin</code></div>
+        <div class="feature-item"><i class="fas fa-moon"></i> <code>/afk</code> <code>/gametime</code></div>
+      </div>
+      <div style="margin-top: 1.2rem; font-size: 0.9rem; color: #9aa4b8; border-top: 1px solid #1f2833; padding-top: 1rem;">
+        <i class="fas fa-database"></i> SQLite storage · <i class="fas fa-sliders"></i> config.yml
+      </div>
+    </div>
+
+    <!-- right: permissions -->
+    <div class="card">
+      <h2><i class="fas fa-lock"></i> Permissions</h2>
+      <table class="permission-table">
+        <thead><tr><th>Permission</th><th>Default</th></tr></thead>
+        <tbody>
+          <tr><td><code>essentialsplus.spawn</code></td><td class="default-true">true</td></tr>
+          <tr><td><code>essentialsplus.setspawn</code></td><td class="default-op">op</td></tr>
+          <tr><td><code>essentialsplus.tpa</code></td><td class="default-true">true</td></tr>
+          <tr><td><code>essentialsplus.tpahere</code></td><td class="default-true">true</td></tr>
+          <tr><td><code>essentialsplus.tpaccept</code></td><td class="default-true">true</td></tr>
+          <tr><td><code>essentialsplus.tpdeny</code></td><td class="default-true">true</td></tr>
+          <tr><td><code>essentialsplus.tpatoggle</code></td><td class="default-true">true</td></tr>
+          <tr><td><code>essentialsplus.home</code></td><td class="default-true">true</td></tr>
+          <tr><td><code>essentialsplus.sethome</code></td><td class="default-true">true</td></tr>
+          <tr><td><code>essentialsplus.delhome</code></td><td class="default-true">true</td></tr>
+          <tr><td><code>essentialsplus.homes</code></td><td class="default-true">true</td></tr>
+          <tr><td><code>essentialsplus.warp</code></td><td class="default-true">true</td></tr>
+          <tr><td><code>essentialsplus.setwarp</code></td><td class="default-op">op</td></tr>
+          <tr><td><code>essentialsplus.delwarp</code></td><td class="default-op">op</td></tr>
+          <tr><td><code>essentialsplus.warps</code></td><td class="default-true">true</td></tr>
+          <tr><td><code>essentialsplus.rtp</code></td><td class="default-true">true</td></tr>
+          <tr><td><code>essentialsplus.workbench</code></td><td class="default-true">true</td></tr>
+          <tr><td><code>essentialsplus.anvil</code></td><td class="default-true">true</td></tr>
+          <tr><td><code>essentialsplus.enderchest</code></td><td class="default-true">true</td></tr>
+          <tr><td><code>essentialsplus.stonecutter</code></td><td class="default-true">true</td></tr>
+          <tr><td><code>essentialsplus.grindstone</code></td><td class="default-true">true</td></tr>
+          <tr><td><code>essentialsplus.wastebin</code></td><td class="default-true">true</td></tr>
+          <tr><td><code>essentialsplus.afk</code></td><td class="default-true">true</td></tr>
+          <tr><td><code>essentialsplus.gametime</code></td><td class="default-true">true</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- KNOWN ISSUES / ISSUE TRACKER + COMMENT SECTION -->
+  <div class="card" style="margin-top: 1rem;">
+    <h2 style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+      <span><i class="fas fa-bug"></i> Issue Tracker</span>
+      <span style="font-size: 0.9rem; font-weight: 400; color: #9aa4b8;"><i class="fas fa-flag"></i> Known issues &amp; reports</span>
+    </h2>
+
+    <!-- known issues box -->
+    <div class="known-issues">
+      <div style="display: flex; gap: 1.2rem; flex-wrap: wrap; margin-bottom: 0.4rem;">
+        <span><i class="fas fa-circle-exclamation" style="color:#f7b731;"></i> Known Issues</span>
+        <span style="color:#bcc8e0;"><i class="fas fa-code"></i> /tpa teleports the other person</span>
+        <span style="color:#bcc8e0;"><i class="fas fa-message"></i> Messages show &amp;a at start</span>
+        <span style="color:#bcc8e0;"><i class="fas fa-hammer"></i> Workbench commands not functional</span>
+      </div>
+      <div style="font-size:0.9rem; color:#d9534f; margin-top: 0.2rem;">
+        <i class="fas fa-exclamation-triangle"></i> REPORT IF FOUND
+      </div>
+    </div>
+
+    <!-- issue tracker items (simulated) -->
+    <div class="issue-tracker">
+      <div class="issue-item">
+        <span class="title">
+          <span class="status open">open</span>
+          /tpa teleports the other player instead of requester
+        </span>
+        <span class="meta"><i class="far fa-clock"></i> 2d ago</span>
+      </div>
+      <div class="issue-item">
+        <span class="title">
+          <span class="status open">open</span>
+          Color codes (&amp;a) shown in messages
+        </span>
+        <span class="meta"><i class="far fa-clock"></i> 5d ago</span>
+      </div>
+      <div class="issue-item">
+        <span class="title">
+          <span class="status fixed">fixed</span>
+          /workbench not opening (fix in next build)
+        </span>
+        <span class="meta"><i class="far fa-clock"></i> 1w ago</span>
+      </div>
+      <div class="issue-item">
+        <span class="title">
+          <span class="status open">open</span>
+          RTP sometimes places player in unsafe location
+        </span>
+        <span class="meta"><i class="far fa-clock"></i> 3d ago</span>
+      </div>
+    </div>
+
+    <!-- comment section -->
+    <div class="comment-section">
+      <h3 style="display: flex; align-items: center; gap: 10px; font-weight: 500; margin: 1.2rem 0 0.8rem;">
+        <i class="fas fa-comment" style="color:#f7b731;"></i> Comments &amp; feedback
+      </h3>
+      <div class="comment-box">
+        <div class="comment-item">
+          <div class="comment-avatar"><i class="fas fa-user"></i></div>
+          <div class="comment-body">
+            <span class="name">MinerSteve</span><span class="time">2 hours ago</span>
+            <div class="text">Great plugin so far! Any chance for 1.20 support?</div>
+          </div>
+        </div>
+        <div class="comment-item">
+          <div class="comment-avatar"><i class="fas fa-user-astronaut"></i></div>
+          <div class="comment-body">
+            <span class="name">PurpurDev</span><span class="time">yesterday</span>
+            <div class="text">Works fine on Purpur 1.21.4, but /warp list is missing.</div>
+          </div>
+        </div>
+        <div class="comment-item">
+          <div class="comment-avatar"><i class="fas fa-user-cog"></i></div>
+          <div class="comment-body">
+            <span class="name">Admin_Leo</span><span class="time">3d ago</span>
+            <div class="text">I love the /wastebin command! Please add /back soon.</div>
+          </div>
+        </div>
+
+        <!-- comment form -->
+        <div class="comment-form">
+          <input type="text" placeholder="Your name" value="Player">
+          <input type="text" placeholder="Write a comment..." style="flex:2;">
+          <button><i class="fas fa-paper-plane"></i> Post</button>
+        </div>
+        <div style="font-size:0.75rem; color:#5f6f86; margin-top: 0.5rem;">
+          <i class="fas fa-info-circle"></i> Comments are stored locally (demo)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- footer / extra links -->
+  <div class="footer-links">
+    <a href="https://modrinth.com/plugin/essentials-plus" target="_blank"><i class="fas fa-download"></i> Modrinth</a>
+    <a href="https://modrinth.com/plugin/essentials-plus/versions" target="_blank"><i class="fas fa-code-branch"></i> Versions</a>
+    <a href="#"><i class="fas fa-book"></i> Wiki (coming soon)</a>
+    <a href="#"><i class="fas fa-comment-dots"></i> Feedback Hub</a>
+    <span style="color:#4a5568;"><i class="fas fa-cube"></i> EssentialsPlus v1.0.0 · MIT</span>
+  </div>
+
+  <!-- small note: modrinth links direct -->
+  <div style="text-align: center; margin-top: 1.5rem; font-size: 0.8rem; color: #3e4a5c;">
+    <i class="fas fa-link"></i> Direct download: 
+    <a href="https://modrinth.com/plugin/essentials-plus" style="color:#f7b731; text-decoration: none;" target="_blank">modrinth.com/plugin/essentials-plus</a> 
+    · 
+    <a href="https://modrinth.com/plugin/essentials-plus/versions" style="color:#f7b731; text-decoration: none;" target="_blank">all versions</a>
+  </div>
+
+</div>
+</body>
+</html>

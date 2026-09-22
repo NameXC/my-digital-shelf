@@ -20,6 +20,13 @@ dist-ssr
 .wrangler/
 .dev.vars
 
+# Local scratch
+#
+# Raw source material for the Unity build in public/games/speed-slope/, kept
+# locally so the compressed .unityweb file can be regenerated. Not needed by
+# the app at runtime, and too large to belong in git.
+New folder/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

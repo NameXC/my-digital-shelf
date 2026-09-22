@@ -1,0 +1,77 @@
+# Headers for the self-hosted Unity WebGL builds and vendored apps.
+#
+# The .unityweb files are already gzip-compressed on disk, but nothing in their
+# name tells a static host that. Without "Content-Encoding: gzip" Unity falls
+# back to inflating them in JavaScript at startup (it logs "You can reduce
+# startup time if you configure your web server to add 'Content-Encoding: gzip'"
+# in the console), which makes the games slow to start. Without the long-lived
+# Cache-Control the browser re-downloads the multi-MB modules on every visit.
+#
+# EXCEPTION: games/slope/data/slope_data.unityweb is stored UNcompressed (raw
+# UnityWebData) — it must NOT get a Content-Encoding: gzip header.
+#
+# This file is read by hosts that support the "_headers" convention
+# (Cloudflare Pages / Workers static assets, Netlify). Hosts that ignore it
+# still work — they just take the slow JavaScript-inflate path. `npm run dev`
+# gets the same headers from the unityWebglHeaders plugin in vite.config.ts.
+#
+# "no-transform" keeps Cloudflare from re-encoding (or transcoding) responses
+# that already carry Content-Encoding, which would strip Content-Length and
+# make the loader's progress reporting jump around.
+
+/games/speed-slope/*.loader.js
+  Cache-Control: public, max-age=31536000, immutable
+
+/games/speed-slope/*.framework.js.unityweb
+  Content-Encoding: gzip
+  Content-Type: application/javascript
+  Cache-Control: public, max-age=31536000, immutable, no-transform
+
+/games/speed-slope/*.wasm.unityweb
+  Content-Encoding: gzip
+  Content-Type: application/wasm
+  Cache-Control: public, max-age=31536000, immutable, no-transform
+
+/games/speed-slope/*.data.unityweb
+  Content-Encoding: gzip
+  Content-Type: application/octet-stream
+  Cache-Control: public, max-age=31536000, immutable, no-transform
+
+/games/speed-slope/index.html
+  Cache-Control: no-cache
+
+/games/slope/index.html
+  Cache-Control: no-cache
+
+/games/slope/slope.json
+  Cache-Control: no-cache
+
+/games/slope/js/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/games/slope/slope_wasmcode.unityweb
+  Content-Encoding: gzip
+  Content-Type: application/wasm
+  Cache-Control: public, max-age=31536000, immutable, no-transform
+
+/games/slope/slope_wasmframework.unityweb
+  Content-Encoding: gzip
+  Content-Type: application/javascript
+  Cache-Control: public, max-age=31536000, immutable, no-transform
+
+/games/slope/slope_framework.unityweb
+  Content-Encoding: gzip
+  Content-Type: application/javascript
+  Cache-Control: public, max-age=31536000, immutable, no-transform
+
+/games/slope/slope_memory.unityweb
+  Content-Encoding: gzip
+  Content-Type: application/octet-stream
+  Cache-Control: public, max-age=31536000, immutable, no-transform
+
+/games/slope/slope_data.unityweb
+  Content-Type: application/octet-stream
+  Cache-Control: public, max-age=31536000, immutable, no-transform
+
+/assets/*
+  cache-control: public, max-age=31536000, immutable

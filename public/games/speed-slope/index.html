@@ -19,35 +19,86 @@
     #progress-bar-full { position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: #3d63cd; transition: width 0.2s; }
   </style>
   <script>
-    // Pre-approve the game's licence check so it works when self-hosted.
+    // The build was wrapped by the gmsoft/Yoplay SDK. That wrapper expects the host page to
+    // supply globals which its own remote "gmsoft-jssdk" script normally defines: `config`,
+    // `firebaseLogEvent`, `firebaseLogEventParameter`, `gmEvent`, `gmStartGame`, `gmStartAds`
+    // and `loadGMData`. Nothing on this page defined them, so:
+    //   1. the SDK wrapper threw "Uncaught ReferenceError: config is not defined" while booting,
+    //      which aborted the rest of the wrapper before it could finish wiring itself up, and
+    //   2. any event the game reports then called an undefined `firebaseLogEvent`.
+    // Pressing START NEW GAME / START WITH ID makes the game report "start-game", so that
+    // ReferenceError was thrown across the WebAssembly boundary straight back into Unity's
+    // main thread and wedged it - the "freeze" on both buttons.
+    // Supplying a config with an empty eventAPI keeps those calls harmless: gmsoft's own
+    // loadGMData() returns immediately when eventAPI is unset, so no analytics/ads traffic
+    // is sent and the game can carry on.
     (function () {
-      var SIGNED = "eyJzaWduZWQiOiJtK1V6dHBzbTFcL1dkU05STEFGS0x3YVl0dzg4b296QlA0QktaeHY5cnNadUluNWlMUWZxMUk3ZEcwbnlIN3hKamRBVTFcL0FEOXZRTVFtRHljWVM0bW9xdFRpRXdDeFh6Mk8rc25ZVjF4ck4wTDN2eHJ1Sm5SSDNnaTBSaUFFSGlvK1NqQzZBMEhQbDd5U09FdkwrMmNoOThHazdjQ0VlenkxMHBLQk5ZdmpEWTZXVUR0WTd2UnVuN3ZwXC9vZUpJcmN4Qk1mOXhRbE41RFVOQkQ3Qm83NFNiU2ZYR1hjd1ZSXC81TkJQQ2hzRnh0cFhOaHpIWURhUVRkYWtrQjdjVENSYVBGQ2VxREN3N1FDQkhoK0ZOZFNXdVEwbm5RMm1QRTJ4alVqOXV1Y0kxWGdQNGZpNmJMVTRRMFhiRkh1SzRsRENLVWF4ZlBmbmxFemZ0UXdOR0MrY09BPT0iLCJhcCI6InllcyIsImhuIjoiZ2FtZXMub2ZyZWUuaW8iLCJkb21haW4iOiJvZnJlZS5pbyIsInMiOiJ5ZXMiLCJzdHlwZSI6Mn0=";
-      try { localStorage.setItem("gmsdksigndomain", SIGNED); } catch (e) {}
-      try { window.GMSOFT_SIGNED = SIGNED; } catch (e) {}
-      // Ignore any "ban this game" event from the remote licence service.
-      document.addEventListener("gmsoftbanevent", function (e) {
-        e.stopImmediatePropagation();
-      }, true);
-      // Serve the licence + settings responses from our own copies.
-      function rewrite(url) {
-        if (typeof url !== "string") return null;
-        if (url.indexOf("keysigned") !== -1) return "gmsdk-signed.txt";
-        if (url.indexOf("sdkdom/gamesdk") !== -1) return "gmsdk-config.json";
-        return null;
+      if (!window.config) {
+        window.config = {
+          sourceHtml: "",
+          eventAPI: "",
+          eventLog: false,
+          gameId: "",
+          referrer: document.referrer,
+          domainHost: window.location.hostname,
+          hostname: window.location.hostname,
+        };
       }
-      var open = XMLHttpRequest.prototype.open;
-      XMLHttpRequest.prototype.open = function (method, url) {
-        var r = rewrite(url);
-        if (r) arguments[1] = r;
-        return open.apply(this, arguments);
-      };
-      var fetchOrig = window.fetch;
-      window.fetch = function (input, init) {
-        var url = typeof input === "string" ? input : input && input.url;
-        var r = rewrite(url);
-        return fetchOrig.call(window, r || input, init);
-      };
+      if (!window.GMSOFT_OPTIONS) window.GMSOFT_OPTIONS = window.config;
+      var noop = function () {};
+      window.firebaseLogEvent = window.firebaseLogEvent || noop;
+      window.firebaseLogEventParameter = window.firebaseLogEventParameter || noop;
+      window.loadGMData = window.loadGMData || noop;
+      window.gmEvent = window.gmEvent || noop;
+      window.gmdebug = window.gmdebug || noop;
+      window.gmStartGame = window.gmStartGame || function (cb) { if (typeof cb === "function") cb(); };
+      window.gmStartAds = window.gmStartAds || function (cb) { if (typeof cb === "function") cb(); };
     })();
+  </script>
+  <!--
+    The gmsoft licence-replay block that used to live here was removed on purpose.
+    It replayed a captured keysigned signature and spoofed window.location to
+    games.ofree.io so the remote SDK domain check would pass. That can never work:
+    the SDK verifies a fresh, server-minted, time-limited signature for the licensed
+    host, so a replay always ends in check sign: False and Game is locked. Those
+    checks live in the remotely loaded SDK and are not ours to defeat. See the
+    Speed Slope licence section in README.md for the background and options.
+  -->
+  <!--
+    The Unity build calls these globals directly (Unity's __Internal bridge, see the
+    blob in speed-slope-v26060301.framework.js.unityweb). The original host page at
+    https://games.ofree.io/speed-slope/play.html defines them next to its Firebase
+    SDK snippet. Without them the game throws "ReferenceError: firebaseLogEvent is
+    not defined" the moment you press START NEW GAME / START WITH ID, which aborts
+    the start-game routine and looks like a freeze.
+
+    They are intentionally no-ops here: this is a self-hosted copy, so analytics
+    must not be sent to the original publisher's Firebase project. The functions
+    keep the exact names and signatures the game expects, so gameplay is unaffected.
+  -->
+  <script>
+    (function () {
+      // The game's SDK layer reports which SDK it is running under.
+      window.GMSOFT_SDKTYPE = window.GMSOFT_SDKTYPE || "gm";
+      // Stand-in for the original page's Firebase config, so the guards in the
+      // functions below behave the same way they do upstream (no config = no-op).
+      window.firebaseConfig = window.firebaseConfig || undefined;
+    })();
+
+    function firebaseLogEvent(event_name) {
+      if (typeof firebaseConfig === "undefined") return;
+      try { firebase.analytics().logEvent(event_name); } catch (e) {}
+    }
+
+    function firebaseLogEventParameter(event_name, event_param) {
+      if (typeof firebaseConfig === "undefined") return;
+      try { firebase.analytics().logEvent(event_name, event_param); } catch (e) {}
+    }
+
+    function firebaseSetUserProperties(props) {
+      if (typeof firebaseConfig === "undefined") return;
+      try { firebase.analytics().setUserProperties(props); } catch (e) {}
+    }
   </script>
   <script src="speed-slope-v26060301.loader.js"></script>
 </head>
@@ -67,7 +118,7 @@
     var progressBarFull = document.querySelector("#progress-bar-full");
     var loadingCover = document.querySelector("#loading-cover");
     createUnityInstance(canvas, {
-      dataUrl: "/__l5e/assets-v1/cad77f14-bebc-45af-b820-27ae9b2d9806/speed-slope-data.unityweb",
+      dataUrl: "speed-slope-v26060301.data.unityweb",
       frameworkUrl: "speed-slope-v26060301.framework.js.unityweb",
       codeUrl: "speed-slope-v26060301.wasm.unityweb",
       streamingAssetsUrl: "StreamingAssets",
